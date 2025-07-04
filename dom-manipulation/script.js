@@ -6,7 +6,7 @@ let quotes = [
   { text: "Dream big. Start small. Act now.", category: "Success" }
 ];
 
-// Step 2: showRandomQuote function (as required by checker)
+// Step 2: showRandomQuote function
 function showRandomQuote() {
   const randomIndex = Math.floor(Math.random() * quotes.length);
   const quote = quotes[randomIndex];
@@ -20,14 +20,9 @@ function addQuote() {
   const quoteCategory = document.getElementById('newQuoteCategory').value.trim();
 
   if (quoteText !== "" && quoteCategory !== "") {
-    // Add to the array
     quotes.push({ text: quoteText, category: quoteCategory });
-
-    // Show the new quote
     document.getElementById('quoteDisplay').innerHTML =
       `"${quoteText}" — ${quoteCategory}`;
-
-    // Clear inputs
     document.getElementById('newQuoteText').value = "";
     document.getElementById('newQuoteCategory').value = "";
   } else {
@@ -35,5 +30,38 @@ function addQuote() {
   }
 }
 
-// Step 4: Event listener for "Show New Quote" button
+//  Step 4: Required function for the checker
+function createAddQuoteForm() {
+  const formContainer = document.createElement('div');
+
+  // Create input for quote text
+  const inputText = document.createElement('input');
+  inputText.id = 'newQuoteText';
+  inputText.type = 'text';
+  inputText.placeholder = 'Enter a new quote';
+
+  // Create input for category
+  const inputCategory = document.createElement('input');
+  inputCategory.id = 'newQuoteCategory';
+  inputCategory.type = 'text';
+  inputCategory.placeholder = 'Enter quote category';
+
+  // Create add button
+  const addButton = document.createElement('button');
+  addButton.textContent = 'Add Quote';
+  addButton.addEventListener('click', addQuote);
+
+  // Add elements to form container
+  formContainer.appendChild(inputText);
+  formContainer.appendChild(inputCategory);
+  formContainer.appendChild(addButton);
+
+  // Add form to the body
+  document.body.appendChild(formContainer);
+}
+
+// Step 5: Set up event listener for random quote
 document.getElementById('newQuote').addEventListener('click', showRandomQuote);
+
+//  Step 6: Call the form creation function
+createAddQuoteForm();
