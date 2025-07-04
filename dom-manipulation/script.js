@@ -7,11 +7,11 @@ let quotes = [
 ];
 
 // Show a random quote from the array
-function showRandomQuote() {
+function displayRandomQuote() {
   const randomIndex = Math.floor(Math.random() * quotes.length);
   const quote = quotes[randomIndex];
   const display = document.getElementById('quoteDisplay');
-  display.textContent = `"${quote.text}" — ${quote.category}`;
+  display.innerHTML = `"${quote.text}" — ${quote.category}`;
 }
 
 // Add a new quote from the input fields
@@ -22,8 +22,8 @@ function addQuote() {
   if (quoteText !== "" && quoteCategory !== "") {
     quotes.push({ text: quoteText, category: quoteCategory });
 
-    // Optionally show the new quote right away
-    document.getElementById('quoteDisplay').textContent =
+    // Update the display with the new quote using innerHTML
+    document.getElementById('quoteDisplay').innerHTML =
       `"${quoteText}" — ${quoteCategory}`;
 
     // Clear inputs
@@ -35,4 +35,4 @@ function addQuote() {
 }
 
 // Attach event listener to "Show New Quote" button
-document.getElementById('newQuote').addEventListener('click', showRandomQuote);
+document.getElementById('newQuote').addEventListener('click', displayRandomQuote);
