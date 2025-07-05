@@ -1,37 +1,43 @@
 // Step 1: Initialize quotes array
 let quotes = [];
 
-// Step 2: Load quotes from localStorage on startup
 function loadQuotes() {
   const storedQuotes = localStorage.getItem('quotes');
   if (storedQuotes) {
     quotes = JSON.parse(storedQuotes);
   } else {
-    // Default quotes (if no localStorage yet)
     quotes = [
       { text: "Believe in yourself and all that you are.", category: "Motivation" },
       { text: "Every moment is a fresh beginning.", category: "Life" },
-      { text: "The purpose of our lives is to be happy.", category: "Life" },
       { text: "Dream big. Start small. Act now.", category: "Success" }
     ];
-    saveQuotes(); // Save default quotes initially
+    saveQuotes();
   }
 }
 
-// Step 3: Save quotes to localStorage
 function saveQuotes() {
   localStorage.setItem('quotes', JSON.stringify(quotes));
 }
 
-// Step 4: Display a random quote
 function showRandomQuote() {
-  const randomIndex = Math.floor(Math.random() * quotes.length);
-  const quote = quotes[randomIndex];
+  const selectedCategory = document.getElementById('categoryFilter').value;
+  let filtered = quotes;
+
+  if (selectedCategory !== 'all') {
+    filtered = quotes.filter(q => q.category === selectedCategory);
+  }
+
+  if (filtered.length === 0) {
+    document.getElementById('quoteDisplay').innerHTML = "No quotes found in this category.";
+    return;
+  }
+
+  const randomIndex = Math.floor(Math.random() * filtered.length);
+  const quote = filtered[randomIndex];
   document.getElementById('quoteDisplay').innerHTML = `"${quote.text}" — ${quote.category}`;
-  sessionStorage.setItem('lastQuote', JSON.stringify(quote)); // optional session storage
+  sessionStorage.setItem('lastQuote', JSON.stringify(quote));
 }
 
-// Step 5: Add a new quote
 function addQuote() {
   const quoteText = document.getElementById('newQuoteText').value.trim();
   const quoteCategory = document.getElementById('newQuoteCategory').value.trim();
@@ -39,10 +45,9 @@ function addQuote() {
   if (quoteText && quoteCategory) {
     quotes.push({ text: quoteText, category: quoteCategory });
     saveQuotes();
+    populateCategories(); // 🔄 Update dropdown if new category added
 
-    document.getElementById('quoteDisplay').innerHTML =
-      `"${quoteText}" — ${quoteCategory}`;
-
+    document.getElementById('quoteDisplay').innerHTML = `"${quoteText}" — ${quoteCategory}`;
     document.getElementById('newQuoteText').value = "";
     document.getElementById('newQuoteCategory').value = "";
   } else {
@@ -50,7 +55,6 @@ function addQuote() {
   }
 }
 
-// ✅ Step 6: Required for checker — creates the add quote form dynamically
 function createAddQuoteForm() {
   const formContainer = document.createElement('div');
 
@@ -74,7 +78,6 @@ function createAddQuoteForm() {
   document.body.appendChild(formContainer);
 }
 
-// ✅ Step 7: Export quotes to JSON file
 function exportToJson() {
   const dataStr = JSON.stringify(quotes, null, 2);
   const blob = new Blob([dataStr], { type: "application/json" });
@@ -86,19 +89,45 @@ function exportToJson() {
   link.click();
 }
 
-// ✅ Step 8: Import quotes from JSON file
 function importFromJsonFile(event) {
   const fileReader = new FileReader();
   fileReader.onload = function(event) {
     const importedQuotes = JSON.parse(event.target.result);
     quotes.push(...importedQuotes);
     saveQuotes();
+    populateCategories();
     alert('Quotes imported successfully!');
   };
   fileReader.readAsText(event.target.files[0]);
 }
 
-// ✅ Step 9: Display last viewed quote on page load (optional)
+// ✅ NEW: Populate category dropdown
+function populateCategories() {
+  const dropdown = document.getElementById('categoryFilter');
+  const selected = dropdown.value;
+
+  // Clear existing options except 'all'
+  dropdown.innerHTML = '<option value="all">All Categories</option>';
+
+  const categories = [...new Set(quotes.map(q => q.category))];
+  categories.forEach(category => {
+    const option = document.createElement('option');
+    option.value = category;
+    option.textContent = category;
+    dropdown.appendChild(option);
+  });
+
+  dropdown.value = selected;
+}
+
+// ✅ NEW: Filter quotes by selected category
+function filterQuotes() {
+  const category = document.getElementById('categoryFilter').value;
+  localStorage.setItem('lastFilter', category); // Remember user's choice
+  showRandomQuote();
+}
+
+// ✅ Optional: Display last viewed quote
 function displayLastQuote() {
   const last = sessionStorage.getItem('lastQuote');
   if (last) {
@@ -108,8 +137,18 @@ function displayLastQuote() {
   }
 }
 
-// ✅ Step 10: Initialize everything on page load
+// ✅ Restore filter selection on reload
+function restoreFilter() {
+  const lastFilter = localStorage.getItem('lastFilter');
+  if (lastFilter) {
+    document.getElementById('categoryFilter').value = lastFilter;
+  }
+}
+
 loadQuotes();
 createAddQuoteForm();
+populateCategories();
+restoreFilter();
 displayLastQuote();
+
 document.getElementById('newQuote').addEventListener('click', showRandomQuote);
