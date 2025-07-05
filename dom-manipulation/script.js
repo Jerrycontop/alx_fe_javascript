@@ -1,4 +1,3 @@
-// Step 1: Initialize quotes array
 let quotes = [];
 
 function loadQuotes() {
@@ -7,9 +6,8 @@ function loadQuotes() {
     quotes = JSON.parse(storedQuotes);
   } else {
     quotes = [
-      { text: "Believe in yourself and all that you are.", category: "Motivation" },
-      { text: "Every moment is a fresh beginning.", category: "Life" },
-      { text: "Dream big. Start small. Act now.", category: "Success" }
+      { text: "Believe in yourself.", category: "Motivation" },
+      { text: "Keep pushing forward.", category: "Inspiration" }
     ];
     saveQuotes();
   }
@@ -45,8 +43,7 @@ function addQuote() {
   if (quoteText && quoteCategory) {
     quotes.push({ text: quoteText, category: quoteCategory });
     saveQuotes();
-    populateCategories(); // 🔄 Update dropdown if new category added
-
+    populateCategories();
     document.getElementById('quoteDisplay').innerHTML = `"${quoteText}" — ${quoteCategory}`;
     document.getElementById('newQuoteText').value = "";
     document.getElementById('newQuoteCategory').value = "";
@@ -101,14 +98,11 @@ function importFromJsonFile(event) {
   fileReader.readAsText(event.target.files[0]);
 }
 
-// ✅ NEW: Populate category dropdown
 function populateCategories() {
   const dropdown = document.getElementById('categoryFilter');
   const selected = dropdown.value;
 
-  // Clear existing options except 'all'
   dropdown.innerHTML = '<option value="all">All Categories</option>';
-
   const categories = [...new Set(quotes.map(q => q.category))];
   categories.forEach(category => {
     const option = document.createElement('option');
@@ -120,24 +114,20 @@ function populateCategories() {
   dropdown.value = selected;
 }
 
-// ✅ NEW: Filter quotes by selected category
 function filterQuotes() {
   const category = document.getElementById('categoryFilter').value;
-  localStorage.setItem('lastFilter', category); // Remember user's choice
+  localStorage.setItem('lastFilter', category);
   showRandomQuote();
 }
 
-// ✅ Optional: Display last viewed quote
 function displayLastQuote() {
   const last = sessionStorage.getItem('lastQuote');
   if (last) {
     const quote = JSON.parse(last);
-    document.getElementById('quoteDisplay').innerHTML =
-      `"${quote.text}" — ${quote.category}`;
+    document.getElementById('quoteDisplay').innerHTML = `"${quote.text}" — ${quote.category}`;
   }
 }
 
-// ✅ Restore filter selection on reload
 function restoreFilter() {
   const lastFilter = localStorage.getItem('lastFilter');
   if (lastFilter) {
@@ -145,10 +135,50 @@ function restoreFilter() {
   }
 }
 
+// ✅ Simulate server sync
+function simulateServerQuotes() {
+  return [
+    { text: "Server wisdom quote.", category: "Wisdom" },
+    { text: "Consistency beats motivation.", category: "Discipline" }
+  ];
+}
+
+// ✅ Compare and merge quotes
+function syncWithServer() {
+  const serverQuotes = simulateServerQuotes();
+  let updated = false;
+
+  serverQuotes.forEach(serverQuote => {
+    const exists = quotes.some(
+      q => q.text === serverQuote.text && q.category === serverQuote.category
+    );
+    if (!exists) {
+      quotes.push(serverQuote);
+      updated = true;
+    }
+  });
+
+  if (updated) {
+    saveQuotes();
+    populateCategories();
+    showSyncNotification();
+  }
+}
+
+// ✅ Show notification if quotes synced
+function showSyncNotification() {
+  const notice = document.getElementById('syncNotice');
+  notice.style.display = 'block';
+  setTimeout(() => (notice.style.display = 'none'), 5000);
+}
+
+// ✅ Periodic sync every 45 seconds
+setInterval(syncWithServer, 45000); // 45s
+
+// ✅ INITIALIZE EVERYTHING
 loadQuotes();
 createAddQuoteForm();
 populateCategories();
 restoreFilter();
 displayLastQuote();
-
 document.getElementById('newQuote').addEventListener('click', showRandomQuote);

@@ -7,6 +7,11 @@
   </head>
   <body>
     <h1>Dynamic Quote Generator</h1>
+
+    <!-- 🔽 Add this notification area here -->
+  <div id="syncNotice" style="display:none; background:yellow; padding:10px; margin:10px 0;">
+    ⚠ Quotes synced from server.
+  </div>
     <label for="categoryFilter">Filter by Category:</label>
   <select id="categoryFilter" onchange="filterQuotes()">
     <option value="all">All Categories</option>
