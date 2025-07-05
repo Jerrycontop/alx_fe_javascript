@@ -8,11 +8,8 @@
   <body>
     <h1>Dynamic Quote Generator</h1>
 
-    <!-- 🔁 Sync notification -->
-  <div id="syncNotice" style="display:none; background:yellow; padding:10px; margin:10px 0;">
-    🔄 New quotes have been synced from the server.
-  </div>
-  </div>
+  <!-- 🔁 Sync notification (will be updated by JS) -->
+  <div id="syncNotice" style="display:none; background:yellow; padding:10px; margin:10px 0;"></div>
     <label for="categoryFilter">Filter by Category:</label>
   <select id="categoryFilter" onchange="filterQuotes()">
     <option value="all">All Categories</option>
